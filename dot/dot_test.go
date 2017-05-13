@@ -2,7 +2,7 @@ package dot_test
 
 import (
 	"fmt"
-	"lib/dot"
+	"github.com/decoz/go_lib/dot"
 	"log"
 	"testing"
 )

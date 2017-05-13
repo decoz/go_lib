@@ -201,7 +201,6 @@ func (dot *Dot) CVal() string {
 		node 의 child 벨류 값을 리턴한다. 	현재는 퍼스트 노드의 값을 리턴하되
 		차후에 하위 노드중 터미널 노드 의 값을 종합해서 리턴하는 것으로 업그레이드예정
 	*/
-
 	c := dot.ChildN(0)
 
 	if c != nil {
@@ -209,9 +208,8 @@ func (dot *Dot) CVal() string {
 	} else {
 		return ""
 	}
-
 }
-emove
+
 func (dot *Dot) RemoveV(k string) bool {
 	/*
 		k값을 갖는 엘리먼트를 제거
@@ -232,7 +230,7 @@ func (dot *Dot) ChildV(k string) *Dot {
 	for _, d := range dot.child {
 		if string(d.value) == k {
 			return d
-	Remove
+		}
 	}
 	return nil
 }
