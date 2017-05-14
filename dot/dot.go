@@ -12,12 +12,12 @@ type Dot struct {
 	child Dots
 }
 
+/*
+	문자열의 값을 지닌 단일 dot 을 생성
+	문자열에 ., (, ) 등의 기호가 있으면
+	encoding 함
+*/
 func New(str string) *Dot {
-	/*
-		문자열의 값을 지닌 단일 dot 을 생성
-		문자열에 ., (, ) 등의 기호가 있으면
-		encoding 함
-	*/
 	
 	return newDot(Enc(str))
 }
@@ -31,10 +31,8 @@ func newDot(value []byte) *Dot{
 
 
 
+//	Dot 을 파싱 / 생성
 func Make(str string) *Dot {
-	/*
-		Dot 을 파싱 / 생성
-	*/
 
 	p := CreateParser([]byte(str))
 
@@ -47,11 +45,11 @@ func Make(str string) *Dot {
 
 }
 
+/*
+	c 를 n에 추가한다.
+	Put과 중복 ( 둘중 하나 지울 계획)
+*/
 func (n *Dot) Attach(c *Dot) {
-	/*
-		c 를 n에 추가한다.
-		Put과 중복 ( 둘중 하나 지울 계획)
-	*/
 	r := n.ChildV(c.Val())
 	if r == nil {
 		n.Append(c)
@@ -63,14 +61,17 @@ func (n *Dot) Attach(c *Dot) {
 
 }
 
+// 자식노드를 모두 지운다
 func (dot *Dot) CClear() {
 	dot.child = make([]*Dot, 5)[0:0]
 }
 
+
+// dot 의 내용을 시각적으로 보기 편하게 출력한다.
 func (dot *Dot) Print() string {
-	// dot 의 내용을 시각적으로 보기 편하게 출력한다.
 	return dot.print_dot(0)
 }
+
 
 func (dot *Dot) print_dot(lv int) string {
 
@@ -108,6 +109,7 @@ func (n *Dot) add(c *Dot) {
 	}
 }
 
+// 문자열로 변환
 func (dot Dot) String() string {
 	return dot.str()
 }
@@ -151,6 +153,7 @@ func (dot *Dot) str() string {
 
 }
 
+// N번째 자식을 리턴
 func (dot *Dot) ChildN(i int) *Dot {
 
 	if i < len(dot.child) {
@@ -160,6 +163,9 @@ func (dot *Dot) ChildN(i int) *Dot {
 	}
 }
 
+
+
+// Path에 해당하는 자식을 추적해 리턴 
 func (dot *Dot) CPath(path string) *Dot {
 
 	arr := strings.Split(path, ".")
@@ -175,32 +181,35 @@ func (dot *Dot) CPath(path string) *Dot {
 	return cur
 }
 
-
+// 자식 리스트를 리턴
 func (dot *Dot) CList() []*Dot {
 	return dot.child
 
 }
 
+// 복수의  노드를 자식에 추가
 func (dot *Dot) Append(children ...*Dot) {
 	for _, child := range children {
 		dot.add(child)
 	}
 }
 
+// Value 값을 변경 
 func (dot *Dot) Set(str string) {
 	dot.value = Enc(str)
 
 }
 
+// Value 값을 리턴
 func (dot *Dot) Val() string {
 	return Dec(dot.value)
 }
 
+/*
+	node 의 child 벨류 값을 리턴한다. 	현재는 퍼스트 노드의 값을 리턴하되
+	차후에 하위 노드중 터미널 노드 의 값을 종합해서 리턴하는 것으로 업그레이드예정
+*/
 func (dot *Dot) CVal() string {
-	/*
-		node 의 child 벨류 값을 리턴한다. 	현재는 퍼스트 노드의 값을 리턴하되
-		차후에 하위 노드중 터미널 노드 의 값을 종합해서 리턴하는 것으로 업그레이드예정
-	*/
 	c := dot.ChildN(0)
 
 	if c != nil {
@@ -210,12 +219,12 @@ func (dot *Dot) CVal() string {
 	}
 }
 
+/*
+	k값을 갖는 엘리먼트를 제거
+	값이 발견된 경우 true 아니면 false 를 리턴
+	(같은 값이 여러개일 경우 첫번째 경우만 지운다.)
+*/
 func (dot *Dot) RemoveV(k string) bool {
-	/*
-		k값을 갖는 엘리먼트를 제거
-		값이 발견된 경우 true 아니면 false 를 리턴
-		(같은 값이 여러개일 경우 첫번째 경우만 지운다.)
-	*/
 	for i, d := range dot.child {
 		if string(d.value) == k {
 			dot.child = append(dot.child[:i], dot.child[i+1:]...)
@@ -226,6 +235,7 @@ func (dot *Dot) RemoveV(k string) bool {
 	return false
 }
 
+// value 값을 가진 자식을 리턴
 func (dot *Dot) ChildV(k string) *Dot {
 	for _, d := range dot.child {
 		if string(d.value) == k {
@@ -235,7 +245,11 @@ func (dot *Dot) ChildV(k string) *Dot {
 	return nil
 }
 
-
+/*
+ 문자열중에 dot exporession 문자인
+ '.' ',' '(' ')' ' '  를 &d &c &s &e &b 
+ 로 변환하고 '&' 는 && 로 변환한다. 
+*/
 func Enc(str string) []byte {
 
 	src := []byte(str)
@@ -263,6 +277,7 @@ func Enc(str string) []byte {
 	return dst
 }
 
+// Enc 로 인코딩된 문자열을 다시 원래의 문자열로 복원한다.
 func Dec(src []byte) string {
 
 	dst := make([]byte, len(src))[0:0]
