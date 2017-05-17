@@ -1,6 +1,3 @@
 package dot
 
-import (
-
-)
-
+import ()

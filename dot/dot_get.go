@@ -25,12 +25,10 @@ func (d *Dot) Get(query *Dot) *Dot {
 
 type getfunc func(src, query *Dot) *Dot
 
-
-
 func (d *Dot) _get() getfunc {
 
 	d_root := New("")
-	var f getfunc 
+	var f getfunc
 
 	f = func(src, query *Dot) *Dot {
 		//fmt.Println("f() :", src.Val(), query.Val())
@@ -76,8 +74,10 @@ func (d *Dot) _get() getfunc {
 		case '$':
 		default:
 			child := src.ChildV(query.Val())
-			if child == nil { return nil } 
-			switch len(query.child)  {
+			if child == nil {
+				return nil
+			}
+			switch len(query.child) {
 			case 0:
 				return child
 			case 1:
@@ -86,7 +86,9 @@ func (d *Dot) _get() getfunc {
 				find := true
 				for _, qchild := range query.child {
 					d_r := f(child, qchild)
-					if d_r == nil { find = false }
+					if d_r == nil {
+						find = false
+					}
 				}
 				if find {
 					return child

@@ -18,18 +18,15 @@ type Dot struct {
 	encoding 함
 */
 func New(str string) *Dot {
-	
+
 	return newDot(Enc(str))
 }
 
-
-func newDot(value []byte) *Dot{
+func newDot(value []byte) *Dot {
 	n := new(Dot)
-	n.value = value 	
+	n.value = value
 	return n
 }
-
-
 
 //	Dot 을 파싱 / 생성
 func Make(str string) *Dot {
@@ -66,12 +63,10 @@ func (dot *Dot) CClear() {
 	dot.child = make([]*Dot, 5)[0:0]
 }
 
-
 // dot 의 내용을 시각적으로 보기 편하게 출력한다.
 func (dot *Dot) Print() string {
 	return dot.print_dot(0)
 }
-
 
 func (dot *Dot) print_dot(lv int) string {
 
@@ -163,9 +158,7 @@ func (dot *Dot) ChildN(i int) *Dot {
 	}
 }
 
-
-
-// Path에 해당하는 자식을 추적해 리턴 
+// Path에 해당하는 자식을 추적해 리턴
 func (dot *Dot) CPath(path string) *Dot {
 
 	arr := strings.Split(path, ".")
@@ -194,7 +187,7 @@ func (dot *Dot) Append(children ...*Dot) {
 	}
 }
 
-// Value 값을 변경 
+// Value 값을 변경
 func (dot *Dot) Set(str string) {
 	dot.value = Enc(str)
 
@@ -247,8 +240,8 @@ func (dot *Dot) ChildV(k string) *Dot {
 
 /*
  문자열중에 dot exporession 문자인
- '.' ',' '(' ')' ' '  를 &d &c &s &e &b 
- 로 변환하고 '&' 는 && 로 변환한다. 
+ '.' ',' '(' ')' ' '  를 &d &c &s &e &b
+ 로 변환하고 '&' 는 && 로 변환한다.
 */
 func Enc(str string) []byte {
 
