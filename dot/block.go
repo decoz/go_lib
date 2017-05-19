@@ -3,8 +3,8 @@ package dot
 import (
 	"bytes"
 	"encoding/binary"
-	"log"
-	"strconv"
+	//"log"
+	//"strconv"
 )
 
 /*
@@ -18,42 +18,85 @@ type node struct{
 }
 
 
+
+func d_block(dot *Dot, nw *bytes.Buffer, vw *bytes.Buffer) {
+
+	cnt := uint16( len(dot.child) )
+	sz := uint16( len(dot.value) )
+
+	//log.Println(string(dot.value), ":", cnt , "/", sz )
+
+	binary.Write(nw, binary.LittleEndian, cnt)
+	binary.Write(nw, binary.LittleEndian, sz)
+
+	vw.Write(dot.value)
+
+	for _,cdot := range(dot.child) {
+		d_block(cdot, nw, vw)
+	}
+
+}
+
 func Block(dot *Dot ) []byte {
 
+	ncnt,_ :=  _get_size(dot)
+
+	nw := new( bytes.Buffer )
+	vw := new( bytes.Buffer )
+
+	binary.Write(nw, binary.LittleEndian, uint16(ncnt))
+	d_block(dot, nw, vw)
 	
-	//n := node{ccnt: int16(len(dot.child)), sz: int16(len(dot.value))}
-	buff  := new(bytes.Buffer)
-	//var cc, sz int16
-
-
-	cl := int16( len(dot.child) ) 
-	vl := len(dot.value)	
-	
-	binary.Write(buff, binary.LittleEndian, byte(vl))
-	binary.Write(buff, binary.LittleEndian, cl)
-
-	log.Println("dot.Block: ",len(buff.Bytes()) ,"/", buff.Bytes())
-	return buff.Bytes()
+	nw.Write( vw.Bytes())
+	return nw.Bytes()
 
 }
 
-func _block(dot *Dot, p []byte){
 
-	
+func Unblock(buf []byte ) *Dot {
+
+	nr:= bytes.NewReader(buf)
+
+	var ncnt  uint16
+	binary.Read(nr, binary.LittleEndian, &ncnt)
+
+	vr:= bytes.NewReader( buf[ ncnt * 4 + 2 :] )
+	dot := d_unblock(nr, vr)
+
+	return dot
+}
+
+func d_unblock( nr *bytes.Reader, vr *bytes.Reader) *Dot{
+
+	var ccnt, sz uint16
+	binary.Read(nr, binary.LittleEndian,&ccnt )
+	binary.Read(nr, binary.LittleEndian,&sz )
+
+	val := make([]byte, int(sz) )
+	vr.Read(val)
+	d := newDot(val)
+
+	for i:=0; i< int(ccnt); i++ {
+		d.Append(d_unblock(nr, vr))
+	}
+
+
+	return d
 
 }
 
-/*
-	block 구조를 
-*/
-func Unblock(buff []byte ) *Dot {
 
-	r:=  bytes.NewReader(buff)
-	
-	var val  int
-	binary.Read(r, binary.LittleEndian, &val)	
-		
-	t := Make(strconv.Itoa(val))	
-	return t 
+func _get_size(dot *Dot) (int, int){
+
+	c := 1
+	l := len(dot.value)
+
+	for _,ch := range(dot.child){
+		cc,cl := _get_size(ch)
+		c += cc
+		l += cl
+	}
+
+	return c,l
 
 }

@@ -8,11 +8,15 @@ import (
 
 func TestBlock(t *testing.T) {
 
-	d := dot.Make("a(b,b)")
+
+	d := dot.Make("a(1(x,y,z),this,is,game,end)")
+	//d := dot.Make("a(b,c)")
 	buff := dot.Block(d)
-	d2 := dot.Unblock(buff)		
-	log.Println("TestBlock:", d2)
+	d2	 := dot.Unblock(buff)		
+	log.Println("TestBlock:", buff)
+	log.Println("\t", d2)
 	
+
 
 
 
