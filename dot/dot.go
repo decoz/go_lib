@@ -1,6 +1,7 @@
 package dot
 
 import (
+	//"log"
 	"strconv"
 	"strings"
 )

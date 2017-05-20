@@ -2,6 +2,7 @@ package dot
 
 import (
 	"strings"
+	//"log"
 )
 
 type Parser struct {
@@ -39,7 +40,7 @@ func (parser *Parser) Parse(name []byte, depth int) *Dot {
 	n.value = name
 	n.child = make([]*Dot, 5)[0:0]
 
-	var (
+	var ( 
 		token  []byte
 		symbol byte
 	)
@@ -54,7 +55,7 @@ func (parser *Parser) Parse(name []byte, depth int) *Dot {
 
 		case ',':
 			//if len(token) > 0 { n.add(New(token)) }
-			n.add(newDot(token))
+			n.add(newDot(Trim(token)))
 			if depth > 0 {
 				//log.Println("back with",string(token))
 				return n
@@ -67,7 +68,7 @@ func (parser *Parser) Parse(name []byte, depth int) *Dot {
 			n.add(parser.Parse(token, 0))
 
 		case ')':
-			n.add(newDot(token))
+			n.add(newDot(Trim(token)))
 			if depth > 0 {
 				return n
 			} else {
@@ -84,7 +85,7 @@ func (parser *Parser) Parse(name []byte, depth int) *Dot {
 	}
 
 	if len(token) > 0 {
-		n.add(newDot(token))
+		n.add(newDot(Trim(token)))
 	}
 	return n
 }
@@ -108,6 +109,34 @@ func (parser *Parser) next() ([]byte, byte) {
 
 	return buff, 0
 }
+
+
+func Trim( buff []byte ) []byte{
+
+	
+	s := 0 
+	e := len(buff)-1 
+
+	if e < 0 { return buff }
+
+	
+	for buff[s] == ' ' || buff[s] == '\n' || buff[s] == '\t' {
+		if s  >= e { break }
+		s++
+	}
+	
+	for buff[e] == ' ' || buff[e] == '\n' || buff[e] == '\t' {
+		e--
+		if s  >= e { break }
+	}
+
+
+	//log.Println(buff, buff[s:e+1]) 
+		
+	return buff[s:e+1]
+
+}
+
 
 func TabParse(bdata []byte) *Dot {
 	/*

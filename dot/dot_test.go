@@ -7,16 +7,31 @@ import (
 	"testing"
 )
 
+func TestParser(t *testing.T) {
+	fmt.Println("\nTestParser")
+
+	str := "x(a, b)"
+	p := dot.CreateParser([]byte(str))
+	n := p.Parse([]byte("root"), 0)
+
+	log.Println(p)
+	log.Println(n)
+
+}
+
 func TestPut(t *testing.T) {
 
+	fmt.Println("\nTestPut")
 	d := dot.Make("a.b")
 	d.Put(dot.Make("(c,d,e)"))
 	log.Println("dot.put:", d)
 
 }
 
+
 func TestGet(t *testing.T) {
 
+	fmt.Println("\nTestGet")
 	dstrs := []string{
 		"a(b(d,e),c.d.f)",
 		"a(b.b.b,a.b.c.c)",
@@ -45,43 +60,12 @@ func TestGet(t *testing.T) {
 
 		}
 	}
-
-	d1 := dot.Make("a(b(d,e),c.d.f)")
-	d2 := dot.Make("a(b.b.b,a.b.c.c)")
-
-	log.Println("dot.get", d1)
-
-	q1_0 := dot.Make("c.d")
-	q1_1 := dot.Make("*.b(d,e)")
-	q1 := dot.Make("*.d.f")
-	q2 := dot.Make("*.b")
-	q2_1 := dot.Make("?.b")
-	q2_2 := dot.Make("b.?.b")
-
-	fmt.Println("get ", d1, q1_0, " result :", d1.Get(q1_0))
-	fmt.Println("get ", d1, q1_1, " result :", d1.Get(q1_1))
-	fmt.Println("get ", d1, q1, " result :", d1.Get(q1))
-	fmt.Println("get ", d2, q2, " result :", d2.Get(q2))
-	fmt.Println("get ", d2, q2_1, " result :", d2.Get(q2_1))
-
-	fmt.Println("get ", d2, q2_2, " result :", d2.Get(q2_2))
-
-	/*
-		if rid.String() != "(e,e)" {
-			t.Error("N depth get fail")
-		}
-	*/
 }
 
-func TestParser(t *testing.T) {
-	str := "x(a,b)"
-	p := dot.CreateParser([]byte(str))
-	n := p.Parse([]byte("root"), 0)
-	log.Println(n)
-
-}
 
 func TestAttach(t *testing.T) {
+	fmt.Println("\nTestAttach")
+
 	d := dot.Make("/(a,b)")
 	d_attach := dot.Make("b.bb.bbb(1,2,3,4.x)")
 	d.Attach(d_attach)
