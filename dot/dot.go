@@ -1,7 +1,7 @@
 package dot
 
 import (
-	//"log"
+//	"log"
 	"strconv"
 	"strings"
 )
@@ -183,6 +183,7 @@ func (dot *Dot) CList() []*Dot {
 
 // 복수의  노드를 자식에 추가
 func (dot *Dot) Append(children ...*Dot) {
+	//log.Println(children)
 	for _, child := range children {
 		dot.add(child)
 	}
@@ -238,6 +239,9 @@ func (dot *Dot) ChildV(k string) *Dot {
 	}
 	return nil
 }
+
+
+
 
 /*
  문자열중에 dot exporession 문자인

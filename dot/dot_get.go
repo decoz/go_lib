@@ -1,104 +1,115 @@
 package dot
 
 import (
-	"fmt"
-	"strconv"
+	//"fmt"
+	//"strconv"
 )
 
-/*
-func (d *Dot) Get(query interface{}) *Dot {
-
-	query := Make(qstr);
-	d_root := d._get()(d, query)
-	fmt.Println("get:", d_root.String())
-	return d_root
-
-}
-*/
 // Get list of dot *link by query
 func (d *Dot) Get(query *Dot) *Dot {
 	//	d_root := Make("")
-	d_root := d._get()(d, query)
-	//fmt.Println("get:", d_root.String())
+
+	d_root := New("")
+	for _,child := range d.child {
+		d_r := child._qget(query)
+		if d_r != nil {
+			if d_r.Val() == ""  {
+				d_r.Inherit( d_root )
+			} else {
+				d_root.Append(d_r) 
+			}	
+		}
+	}
 	return d_root
 }
 
-type getfunc func(src, query *Dot) *Dot
+func (dot *Dot) Inherit(d_scc *Dot){
+	
+	for _,child := range dot.child {
+		d_scc.Append( child )
+	}
 
-func (d *Dot) _get() getfunc {
+}
 
-	d_root := New("")
-	var f getfunc
 
-	f = func(src, query *Dot) *Dot {
-		//fmt.Println("f() :", src.Val(), query.Val())
+func (d *Dot) _qget(query *Dot) *Dot {
+	
+	//fmt.Println(" q() :", d.Val(), query.Val())
+	rr := New("") // rr
 
-		var d_search *Dot
-		switch query.value[0] {
-		case '*':
-			for _, qchild := range query.child {
-				d_search = f(src, qchild)
-				if d_search != nil {
-					d_root.Append(src.ChildV(qchild.Val()))
-				}
+	take := func(d *Dot, td *Dot ){
+		if td.Val() == ""  {
+			td.Inherit(d)
+		} else {
+			d.Append(td)
+		}
+	}
+
+	match := func(d *Dot, query *Dot) bool{
+		for _, qchild := range query.child {
+			find := false
+			for _, child := range d.child {
+				d_r := child._qget(qchild)
+				if d_r != nil { find = true } 
 			}
-			for _, dchild := range src.child {
-				f(dchild, query)
-			}
+			if !find  { return false }
+		}
+		return true
+	}
 
-		case '?':
-			for _, dchild := range src.child {
-				for _, qchild := range query.child {
-					d_search = f(dchild, qchild)
-					if d_search != nil {
-						d_root.Append(dchild)
-					}
-				}
-			}
-		case '+':
-			//fmt.Println("+ operation")
-			if len(query.Val()) < 2 {
-				fmt.Println("copy all:", src.String())
-				return src.Copy(-1)
-			} else {
-				num, err := strconv.Atoi(query.Val()[1:])
-				fmt.Println("num:", num)
-				if err != nil {
-					fmt.Println("error: bad argument for +")
-					return nil
-				} else {
-					return src.Copy(num)
-				}
+	switch query.value[0] {
+	case '*':
 
-			}
-		case '$':
-		default:
-			child := src.ChildV(query.Val())
-			if child == nil {
-				return nil
-			}
-			switch len(query.child) {
-			case 0:
-				return child
-			case 1:
-				return f(child, query.child[0])
-			default:
-				find := true
-				for _, qchild := range query.child {
-					d_r := f(child, qchild)
-					if d_r == nil {
-						find = false
-					}
-				}
-				if find {
-					return child
-				} else {
-					return nil
-				}
+		if match(d, query)  { rr.Append(d) }
+
+		for _, dchild := range d.child {
+			d_r := dchild._qget(query)
+			if d_r != nil {
+				take(rr, d_r )
 			}
 		}
-		//fmt.Println("return//", d_root.String())
-		return d_root
+
+	case '?':
+		if match(d, query) { rr.Append(d) }	
+
+	case '+': // 미정	
+	case '$':
+
+	default:
+		if 	d.Val() != query.Val() ||
+			len(d.child) < len(query.child){
+			return nil 	
+		}
+
+		switch len(query.child) {
+		case 0:
+			return d
+		case 1:
+			 for _, child := range d.child {
+				d_r :=  child._qget(query.child[0])
+				if d_r != nil {      // only return first search
+					take(rr,  d_r ) 
+				} 
+			}
+		default:
+			if match(d, query)	{ rr.Append(d) }
+		}
 	}
-	return f
+	//fmt.Println(" return ://", rr)
+
+	switch len(rr.child) {
+	case 0 : 
+		return nil
+	case 1 : 
+		return rr.ChildN(0)	
+	default:
+		return rr
+	}
+
+
 }
+
+
+
+
+

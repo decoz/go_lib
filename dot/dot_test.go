@@ -45,17 +45,15 @@ func TestGet(t *testing.T) {
 		ds[i] = dot.Make(dstr)
 		fmt.Println(ds[i])
 	}
-
 	qlist[0] = []string{
-		"c.d", "*.d.f", "*.b(d,e)"}
+		"c.d", "b(d,e)", "*.d.f", "*(d,e)"}
 
 	qlist[1] = []string{
-		"*.b", "?.b", "b.?.b"}
-
+		"*.b", "?.b", "b.?.b", "*.?.?.c"}
+	
 	for i, qstrs := range qlist {
 		for _, qstr := range qstrs {
-
-			fmt.Println("get ", qstr, " from ", dstrs[i])
+			fmt.Println("\nget ", qstr, " from ", dstrs[i])
 			fmt.Println("result :", ds[i].Get(dot.Make(qstr)))
 
 		}
