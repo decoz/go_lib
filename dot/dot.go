@@ -76,7 +76,7 @@ func (dot *Dot) print_dot(lv int) string {
 		str += "\t"
 	}
 
-	sz := len(dot.value)
+	sz := len(dot.Val())
 
 	if sz > 30 {
 		str += string(dot.value[0:30])
@@ -106,11 +106,8 @@ func (n *Dot) add(c *Dot) {
 }
 
 // 문자열로 변환
-func (dot Dot) String() string {
-	return dot.str()
-}
+func (dot *Dot) String() string {
 
-func (dot *Dot) str() string {
 
 	str := ""
 	ccnt := len(dot.child)
@@ -124,7 +121,7 @@ func (dot *Dot) str() string {
 	case ccnt == 0:
 
 	case ccnt == 1:
-		str += "." + dot.child[0].str()
+		str += "." + dot.child[0].String()
 
 	case ccnt > 1:
 
@@ -139,7 +136,7 @@ func (dot *Dot) str() string {
 				str += ","
 			}
 
-			str += child.str()
+			str += child.String()
 		}
 
 		str += ")"
@@ -190,7 +187,7 @@ func (dot *Dot) Append(children ...*Dot) {
 }
 
 // Value 값을 변경
-func (dot *Dot) Set(str string) {
+func (dot *Dot) SetV(str string) {
 	dot.value = Enc(str)
 
 }
@@ -221,7 +218,7 @@ func (dot *Dot) CVal() string {
 */
 func (dot *Dot) RemoveV(k string) bool {
 	for i, d := range dot.child {
-		if string(d.value) == k {
+		if d.Val() == k {
 			dot.child = append(dot.child[:i], dot.child[i+1:]...)
 			return true
 		}
@@ -233,7 +230,7 @@ func (dot *Dot) RemoveV(k string) bool {
 // value 값을 가진 자식을 리턴
 func (dot *Dot) ChildV(k string) *Dot {
 	for _, d := range dot.child {
-		if string(d.value) == k {
+		if d.Val() == k {
 			return d
 		}
 	}

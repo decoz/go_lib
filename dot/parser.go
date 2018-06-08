@@ -2,7 +2,7 @@ package dot
 
 import (
 	"strings"
-	//"log"
+	"log"
 )
 
 type Parser struct {
@@ -40,7 +40,7 @@ func (parser *Parser) Parse(name []byte, depth int) *Dot {
 	n.value = name
 	n.child = make([]*Dot, 5)[0:0]
 
-	var ( 
+	var (
 		token  []byte
 		symbol byte
 	)
@@ -113,26 +113,26 @@ func (parser *Parser) next() ([]byte, byte) {
 
 func Trim( buff []byte ) []byte{
 
-	
-	s := 0 
-	e := len(buff)-1 
+
+	s := 0
+	e := len(buff)-1
 
 	if e < 0 { return buff }
 
-	
+
 	for buff[s] == ' ' || buff[s] == '\n' || buff[s] == '\t' {
 		if s  >= e { break }
 		s++
 	}
-	
+
 	for buff[e] == ' ' || buff[e] == '\n' || buff[e] == '\t' {
 		e--
 		if s  >= e { break }
 	}
 
 
-	//log.Println(buff, buff[s:e+1]) 
-		
+	//log.Println(buff, buff[s:e+1])
+
 	return buff[s:e+1]
 
 }
@@ -149,16 +149,14 @@ func TabParse(bdata []byte) *Dot {
 	root := Make("")
 
 	str := string(bdata)
-	lines := strings.Split(str, "\r\n")
+	lines := strings.Split(str, "\n")
 
 	depth := make([]int, 100)
-
 	path := make([]*Dot, 100)
 	path[0] = root
 	depth[0] = -1
 
 	pos := 0
-
 	for _, l := range lines {
 
 		di := 0
@@ -175,13 +173,26 @@ func TabParse(bdata []byte) *Dot {
 
 		er := len(l) - 1
 
-		for ; er >= 0 && (l[er] == ' ' || l[er] == '\t'); er-- {
-		}
-		if di >= er+1 {
-			continue
+		for ; er >= 0 && (l[er] == ' ' || l[er] == '\t' || l[er] == '\r'); er-- { }
+		if di >= er+1 { continue }
+
+		str := string(l[di : er+1])
+		arr := strings.Split(str, "\t")
+
+		log.Println(len(arr),":", arr)
+
+		//var d *dot.Dot
+		d := New(arr[0])
+		cd := d
+		for _,v := range arr[1:] {
+			nd := New(v)
+			cd.Append( nd )
+			cd = nd
 		}
 
-		d := New(string(l[di : er+1]))
+		//d := New(string(l[di : er+1]))
+
+
 
 		i := pos
 		for ; depth[i] >= deep; i-- {
@@ -191,9 +202,7 @@ func TabParse(bdata []byte) *Dot {
 		pos = i + 1
 		path[pos] = d
 		depth[pos] = deep
-
 		//log.Println(li, ":", deep, ">", pos, " ", d.Val())
-
 	}
 
 	return root

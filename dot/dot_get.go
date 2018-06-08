@@ -6,9 +6,9 @@ import (
 )
 
 // Get list of dot *link by query
-func (d *Dot) Get(query *Dot) *Dot {
+func (d *Dot) Get(s_query string) *Dot {
 	//	d_root := Make("")
-
+	query := Make(s_query)
 	d_root := New("")
 	for _,child := range d.child {
 		d_r := child._qget(query)
@@ -16,15 +16,15 @@ func (d *Dot) Get(query *Dot) *Dot {
 			if d_r.Val() == ""  {
 				d_r.Inherit( d_root )
 			} else {
-				d_root.Append(d_r) 
-			}	
+				d_root.Append(d_r)
+			}
 		}
 	}
 	return d_root
 }
 
 func (dot *Dot) Inherit(d_scc *Dot){
-	
+
 	for _,child := range dot.child {
 		d_scc.Append( child )
 	}
@@ -33,7 +33,7 @@ func (dot *Dot) Inherit(d_scc *Dot){
 
 
 func (d *Dot) _qget(query *Dot) *Dot {
-	
+
 	//fmt.Println(" q() :", d.Val(), query.Val())
 	rr := New("") // rr
 
@@ -50,7 +50,7 @@ func (d *Dot) _qget(query *Dot) *Dot {
 			find := false
 			for _, child := range d.child {
 				d_r := child._qget(qchild)
-				if d_r != nil { find = true } 
+				if d_r != nil { find = true }
 			}
 			if !find  { return false }
 		}
@@ -70,15 +70,15 @@ func (d *Dot) _qget(query *Dot) *Dot {
 		}
 
 	case '?':
-		if match(d, query) { rr.Append(d) }	
+		if match(d, query) { rr.Append(d) }
 
-	case '+': // 미정	
+	case '+': // 미정
 	case '$':
 
 	default:
 		if 	d.Val() != query.Val() ||
 			len(d.child) < len(query.child){
-			return nil 	
+			return nil
 		}
 
 		switch len(query.child) {
@@ -88,8 +88,8 @@ func (d *Dot) _qget(query *Dot) *Dot {
 			 for _, child := range d.child {
 				d_r :=  child._qget(query.child[0])
 				if d_r != nil {      // only return first search
-					take(rr,  d_r ) 
-				} 
+					take(rr,  d_r )
+				}
 			}
 		default:
 			if match(d, query)	{ rr.Append(d) }
@@ -98,18 +98,13 @@ func (d *Dot) _qget(query *Dot) *Dot {
 	//fmt.Println(" return ://", rr)
 
 	switch len(rr.child) {
-	case 0 : 
+	case 0 :
 		return nil
-	case 1 : 
-		return rr.ChildN(0)	
+	case 1 :
+		return rr.ChildN(0)
 	default:
 		return rr
 	}
 
 
 }
-
-
-
-
-

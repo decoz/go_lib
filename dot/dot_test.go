@@ -22,11 +22,31 @@ func TestParser(t *testing.T) {
 func TestPut(t *testing.T) {
 
 	fmt.Println("\nTestPut")
-	d := dot.Make("a.b")
-	d.Put(dot.Make("(c,d,e)"))
-	log.Println("dot.put:", d)
 
+	dstrs := []string{
+		"a(b.c,d.e)" }
+
+	n := len(dstrs)
+	ds := make([]*dot.Dot, n)
+	qlist := make([][]string, n)
+
+	for i, dstr := range dstrs {
+		ds[i] = dot.Make(dstr)
+		fmt.Println(ds[i])
+	}
+	qlist[0] = []string{
+		"b.d", "d.e(f,g)", "d/x"}
+
+	for i, qstrs := range qlist {
+		for _, qstr := range qstrs {
+			fmt.Println("\nget ", qstr, " from ", dstrs[i])
+			ds[i].Set(qstr)
+			fmt.Println("result :",ds[i])
+
+		}
+	}
 }
+
 
 
 func TestGet(t *testing.T) {
@@ -50,11 +70,11 @@ func TestGet(t *testing.T) {
 
 	qlist[1] = []string{
 		"*.b", "?.b", "b.?.b", "*.?.?.c"}
-	
+
 	for i, qstrs := range qlist {
 		for _, qstr := range qstrs {
 			fmt.Println("\nget ", qstr, " from ", dstrs[i])
-			fmt.Println("result :", ds[i].Get(dot.Make(qstr)))
+			fmt.Println("result :", ds[i].Get(qstr))
 
 		}
 	}
